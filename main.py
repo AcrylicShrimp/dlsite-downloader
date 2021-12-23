@@ -119,7 +119,7 @@ for work in works:
                     work['id'])
                 file_size = int(res['contents'][0]['file_size'])
                 file_name = res['contents'][0]['file_name']
-                download_file(image_url, image_size, image_name)
+                download_file(file_url, file_size, file_name)
             else:
                 # Multiple files.
                 for index, file in enumerate(res['contents']):
