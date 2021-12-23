@@ -1,6 +1,8 @@
 import os
 import re
 import requests
+import shutil
+import subprocess
 import sys
 from tqdm import tqdm
 
@@ -126,6 +128,35 @@ for work in works:
                     file_size = int(file['file_size'])
                     file_name = file['file_name']
                     download_file(file_url, file_size, file_name)
+
+                # Run the self extracting archive if the extension is .exe.
+                if res['contents'][0]['file_name'].endswith('.exe'):
+                    print('extracting files...', end=' ')
+
+                    subprocess.run(
+                        ['downloads/{}/{}/{}'.format(group, title, res['contents'][0]['file_name']), '-s2', '-ddownloads/{}/{}/__tmp'.format(group, title)])
+
+                    # Remove the container files.
+                    for file in res['contents']:
+                        os.remove('downloads/{}/{}/{}'.format(group,
+                                  title, file['file_name']))
+
+                    # Find the directory name of the extracted files.
+                    dir_name = os.listdir(
+                        'downloads/{}/{}/__tmp'.format(group, title))[0]
+                    src = 'downloads/{}/{}/__tmp/{}'.format(
+                        group, title, dir_name)
+                    dst = 'downloads/{}/{}'.format(group, title)
+
+                    # Move the extracted files to the current.
+                    for file in os.listdir(src):
+                        shutil.move('{}/{}'.format(src, file),
+                                    dst)
+
+                    # Remove the extracted directory.
+                    shutil.rmtree('downloads/{}/{}/__tmp'.format(group, title))
+
+                    print('Ok')
 
             break
 
