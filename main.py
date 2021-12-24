@@ -133,8 +133,10 @@ for work in works:
                 if res['contents'][0]['file_name'].endswith('.exe'):
                     print('extracting files...', end=' ')
 
-                    subprocess.run(
-                        ['downloads/{}/{}/{}'.format(group, title, res['contents'][0]['file_name']), '-s2', '-ddownloads/{}/{}/__tmp'.format(group, title)])
+                    subprocess.run([
+                        'downloads/{}/{}/{}'.format(group, title,
+                                                    res['contents'][0]['file_name']),
+                        '-s2', '-d__tmp'], cwd='downloads/{}/{}'.format(group, title))
 
                     # Remove the container files.
                     for file in res['contents']:
@@ -162,13 +164,13 @@ for work in works:
 
         except Exception as err:
             error_count += 1
-            print('an error occured: {}'.format(err))
+            print('an error occured: %s' % err)
 
             if error_count == 3:
                 print('download failed.')
                 break
             else:
-                print('[count=%d] retrying.', error_count)
+                print('[count=%d] retrying.' % error_count)
 
 print()
 print('all products have been downloaded.')
