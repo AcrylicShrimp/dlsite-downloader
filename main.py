@@ -74,21 +74,26 @@ for work in works:
     title = re.sub(r'[\\/:*?"<>|]', '_', work['title'])
 
     # Create a directory for the work.
-    if not os.path.exists('downloads/{}'.format(group)):
-        os.mkdir('downloads/{}'.format(group))
+    if not os.path.exists('downloads/{}'.format(work['type'])):
+        os.mkdir('downloads/{}'.format(work['type']))
 
-    if not os.path.exists('downloads/{}/{}'.format(group, title)):
+    if not os.path.exists('downloads/{}/{}'.format(work['type'], group)):
+        os.mkdir('downloads/{}/{}'.format(work['type'], group))
+
+    if not os.path.exists('downloads/{}/{}/{}'.format(work['type'], group, title)):
         os.mkdir(
-            'downloads/{}/{}'.format(group, title))
+            'downloads/{}/{}/{}'.format(work['type'], group, title))
     else:
         print('already exists. skipping.')
         continue
+
+    base_dir = 'downloads/{}/{}/{}'.format(work['type'], group, title)
 
     def download_file(file_url, file_size, file_name):
         with s.get(file_url, stream=True, allow_redirects=True) as r:
             r.raise_for_status()
 
-            with tqdm.wrapattr(open('downloads/{}/{}/{}'.format(group, title, file_name), 'wb'), 'write', file_size, desc=file_name) as f:
+            with tqdm.wrapattr(open('{}/{}'.format(base_dir, file_name), 'wb'), 'write', file_size, desc=file_name) as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
 
@@ -131,37 +136,34 @@ for work in works:
                     print('extracting files...', end=' ')
 
                     subprocess.run([
-                        'downloads/{}/{}/{}'.format(group, title,
-                                                    res['contents'][0]['file_name']),
-                        '-s2', '-d__tmp'], cwd='downloads/{}/{}'.format(group, title))
+                        '{}/{}'.format(base_dir,
+                                       res['contents'][0]['file_name']),
+                        '-s2',
+                        '-d__tmp'
+                    ], cwd=base_dir)
 
                     # Remove the container files.
                     for file in res['contents']:
-                        os.remove('downloads/{}/{}/{}'.format(group,
-                                  title, file['file_name']))
+                        os.remove('{}/{}'.format(base_dir, file['file_name']))
 
                     # Find the directory name of the extracted files.
-                    dirs = os.listdir(
-                        'downloads/{}/{}/__tmp'.format(group, title))
+                    dirs = os.listdir('{}/__tmp'.format(base_dir))
 
                     if len(dirs) == 1:
                         # The SFX contains root directory.
-                    src = 'downloads/{}/{}/__tmp/{}'.format(
-                            group, title, dirs[0])
+                        src = '{}/__tmp/{}'.format(base_dir, dirs[0])
                     else:
                         # The SFX not have root directory.
-                        src = 'downloads/{}/{}/__tmp'.format(
-                            group, title)
+                        src = '{}/__tmp'.format(base_dir)
 
-                    dst = 'downloads/{}/{}'.format(group, title)
+                    dst = '{}'.format(base_dir)
 
                     # Move the extracted files to the current.
                     for file in os.listdir(src):
-                        shutil.move('{}/{}'.format(src, file),
-                                    dst)
+                        shutil.move('{}/{}'.format(src, file), dst)
 
                     # Remove the extracted directory.
-                    shutil.rmtree('downloads/{}/{}/__tmp'.format(group, title))
+                    shutil.rmtree('{}/__tmp'.format(base_dir))
 
                     print('Ok')
 
