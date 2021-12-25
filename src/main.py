@@ -1,3 +1,4 @@
+from getch import pause
 import os
 import requests
 import signal
@@ -112,3 +113,5 @@ if mark_for_termination:
     print('terminated.')
 else:
     print('all products have been downloaded.')
+
+pause('press any key to exit.')
