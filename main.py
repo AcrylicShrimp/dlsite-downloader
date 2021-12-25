@@ -58,9 +58,6 @@ while index < count:
     page += 1
     index += page_limit
 
-# Filter out the works that are not a sound/voice.
-works = filter(lambda x: x['type'] == 'SOU', works)
-
 # Sort the works by purchase date.
 works = sorted(works, key=lambda x: x['date'], reverse=True)
 
