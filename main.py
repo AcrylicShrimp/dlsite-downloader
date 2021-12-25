@@ -144,10 +144,18 @@ for work in works:
                                   title, file['file_name']))
 
                     # Find the directory name of the extracted files.
-                    dir_name = os.listdir(
-                        'downloads/{}/{}/__tmp'.format(group, title))[0]
+                    dirs = os.listdir(
+                        'downloads/{}/{}/__tmp'.format(group, title))
+
+                    if len(dirs) == 1:
+                        # The SFX contains root directory.
                     src = 'downloads/{}/{}/__tmp/{}'.format(
-                        group, title, dir_name)
+                            group, title, dirs[0])
+                    else:
+                        # The SFX not have root directory.
+                        src = 'downloads/{}/{}/__tmp'.format(
+                            group, title)
+
                     dst = 'downloads/{}/{}'.format(group, title)
 
                     # Move the extracted files to the current.
