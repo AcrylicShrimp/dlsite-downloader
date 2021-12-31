@@ -12,9 +12,8 @@ def retry_on_failure(func):
 
                 if count + 1 == RETRY_COUNT:
                     print('download failed.')
-                else:
-                    print('[count=%d] retrying.' % (count + 1))
+                    return False
 
-            return False
+                print('[count=%d] retrying.' % (count + 1))
 
     return wrapper
