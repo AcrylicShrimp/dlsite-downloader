@@ -39,19 +39,22 @@ settings = getSettingsMap()
 if not os.path.exists('downloads'):
     os.mkdir('downloads')
 
-# Get a XSRF-TOKEN by sending a get request. The XSRF-TOKEN is in the response cookie.
 s = requests.Session()
+
+# Skip account guidance which blocks all authentication requests.
+s.get('https://www.dlsite.com/maniax/login/=/skip_register/1')
+
+# Get a XSRF-TOKEN by sending a get request. The XSRF-TOKEN is in the response cookie.
 s.get('https://login.dlsite.com/login')
 
-# Send a authentication request with the XSRF-TOKEN. NOTE: We have to follow the redirect.
+# Send a authentication request with the XSRF-TOKEN. NOTE: We have to follow redirects.
 res = s.post('https://login.dlsite.com/login', data={
     'login_id': settings['username'],
     'password': settings['password'],
     '_token': s.cookies['XSRF-TOKEN']
 }, allow_redirects=True)
 
-# Get the product count. The first call is needed to fill the proper cookies.
-s.get('https://play.dlsite.com/api/product_count')
+# Get the product count.
 res = s.get('https://play.dlsite.com/api/product_count').json()
 
 count = res['user']
