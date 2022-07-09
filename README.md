@@ -9,6 +9,6 @@ This program runs with configurations defined at `settings.json` file. If it is 
 - `username`: Your DLsite account's email address.
 - `password`: Your DLsite account's password.
 
-## About Contributes
+## About Contribution
 
 Any kind of contributions are always welcome! But, please create a issue first if you are going to submit a PR.
